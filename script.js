@@ -101,7 +101,7 @@ function generateCalendar(){
 
     const total = document.createElement("div");
     total.className = "month-total";
-    total.innerHTML = `Итого часов отработано: <strong>${monthHours}</strong> ч`;
+    total.innerHTML = `Итого отработано часов: <strong>${monthHours}</strong> ч`;
     monthDiv.appendChild(total);
 
     calendarEl.appendChild(monthDiv);
