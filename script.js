@@ -261,6 +261,10 @@ function showShiftAlert(){
   setTimeout(()=> alert.classList.remove("show"), 4000);
 }
 
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("sw.js");
+}
+
 showShiftAlert();
 
 generateCalendar();
