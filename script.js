@@ -17,9 +17,9 @@ const baseDateUTC = new Date(Date.UTC(2026, 2, 15, 0, 0, 0));
 // Смещения для бригад
 const brigadeOffsets = { A:3, B:2, C:1, D:0 };
 
-// Кнопки бригад
+// ---------- Кнопки бригад ----------
 document.querySelectorAll(".brigade-btn").forEach(btn=>{
-  btn.onclick = ()=>{
+  btn.addEventListener("click", ()=>{
     document.querySelectorAll(".brigade-btn").forEach(b=>b.classList.remove("active"));
     btn.classList.add("active");
 
@@ -28,19 +28,17 @@ document.querySelectorAll(".brigade-btn").forEach(btn=>{
 
     generateCalendar();
     showShiftAlert();
-  };
+  });
 });
 
 const activeBtn = document.querySelector(`[data-brigade="${selectedBrigade}"]`);
 if(activeBtn) activeBtn.classList.add("active");
 
-// Функция расчета смены
+// ---------- Функция расчета смены ----------
 function getShift(date){
   const cycle = shiftCycle;
 
-  // переводим дату в UTC
   const dUTC = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
-
   const diff = Math.floor((dUTC - baseDateUTC) / 86400000);
   let index = (diff + brigadeOffsets[selectedBrigade]) % 4;
   if(index < 0) index += 4;
@@ -48,7 +46,7 @@ function getShift(date){
   return cycle[index];
 }
 
-// Генерация календаря
+// ---------- Генерация календаря ----------
 function generateCalendar(){
   if(!calendarEl) return;
 
@@ -59,14 +57,14 @@ function generateCalendar(){
   yearTitle.innerHTML = `<button id="prevYear">←</button>${currentYear}<button id="nextYear">→</button>`;
   calendarEl.appendChild(yearTitle);
 
-  document.getElementById("prevYear").onclick = ()=>{
+  document.getElementById("prevYear").addEventListener("click", ()=>{
     currentYear--;
     generateCalendar();
-  };
-  document.getElementById("nextYear").onclick = ()=>{
+  });
+  document.getElementById("nextYear").addEventListener("click", ()=>{
     currentYear++;
     generateCalendar();
-  };
+  });
 
   const today = new Date();
   today.setHours(0,0,0,0);
@@ -122,10 +120,10 @@ function generateCalendar(){
       popup.textContent = formatShift(shift);
       cell.appendChild(popup);
 
-      cell.onclick = ()=>{
+      cell.addEventListener("click", ()=>{
         document.querySelectorAll(".day-cell").forEach(c=>c.classList.remove("selected","show-popup"));
         cell.classList.add("selected","show-popup");
-      };
+      });
 
       if(date.toDateString() === today.toDateString()) cell.classList.add("today");
 
@@ -143,7 +141,7 @@ function generateCalendar(){
   }
 }
 
-// Подсветка выбранной даты
+// ---------- Подсветка выбранной даты ----------
 function highlightDate(d){
   const monthDivs = document.querySelectorAll(".month");
   const targetMonth = monthDivs[d.getMonth()];
@@ -159,20 +157,20 @@ function highlightDate(d){
   }
 }
 
-// Кнопки "Сегодня" и "Показать смену"
+// ---------- Кнопки "Сегодня" и "Показать смену" ----------
 if(todayBtn){
-  todayBtn.onclick = ()=>{
+  todayBtn.addEventListener("click", ()=>{
     const target = document.querySelector(".day-cell.today");
     if(target){
       document.querySelectorAll(".day-cell").forEach(c=>c.classList.remove("selected","show-popup"));
       target.classList.add("selected","show-popup");
       target.scrollIntoView({behavior:"smooth", block:"center"});
     }
-  };
+  });
 }
 
 if(checkBtn){
-  checkBtn.onclick = ()=>{
+  checkBtn.addEventListener("click", ()=>{
     if(!dateInput.value) return;
     const d = new Date(dateInput.value);
     d.setHours(0,0,0,0);
@@ -181,15 +179,15 @@ if(checkBtn){
       generateCalendar();
       setTimeout(()=>highlightDate(d),100);
     }else highlightDate(d);
-  };
+  });
 }
 
-// Формат смен
+// ---------- Формат смен ----------
 function formatShift(s){
   return s==="day"?"День":s==="night"?"Ночь":s==="rest"?"Отсыпной":"Выходной";
 }
 
-// Уведомление о смене
+// ---------- Уведомление о смене ----------
 function showShiftAlert(){
   const alert = document.getElementById("shift-alert");
   if(!alert) return;
@@ -209,56 +207,34 @@ function showShiftAlert(){
   setTimeout(()=>alert.classList.remove("show"),4000);
 }
 
-// Переключение темы
+// ---------- Переключение темы ----------
 const themeBtn = document.getElementById("theme-toggle");
 
-// Проверяем сохранённую тему
 let savedTheme = localStorage.getItem("theme");
 if(savedTheme === "light"){
   document.body.classList.add("light");
-  themeBtn.textContent = "🌕"; // светлая тема — показываем луну для переключения
+  themeBtn.textContent = "🌕";
 }else{
-  themeBtn.textContent = "☀️"; // тёмная тема — показываем солнце
+  themeBtn.textContent = "☀️";
 }
 
-// Клик по кнопке для переключения темы
 if(themeBtn){
-  themeBtn.onclick = ()=>{
-    document.body.classList.toggle("light"); // переключаем класс
+  themeBtn.addEventListener("click", ()=>{
+    document.body.classList.toggle("light");
 
     if(document.body.classList.contains("light")){
       localStorage.setItem("theme","light");
-      themeBtn.textContent = "🌕"; // светлая — показываем луну
-    } else {
+      themeBtn.textContent = "🌕";
+    }else{
       localStorage.setItem("theme","dark");
-      themeBtn.textContent = "☀️"; // тёмная — показываем солнце
+      themeBtn.textContent = "☀️";
     }
-  };
+  });
 }
 
-// Проверяем сохранённую тему
-let savedTheme = localStorage.getItem("theme");
-if(savedTheme === "light"){
-  document.body.classList.add("light");
-}
-
-// Клик по кнопке для переключения темы
-if(themeBtn){
-  themeBtn.onclick = ()=>{
-    document.body.classList.toggle("light"); // переключаем класс
-
-    // Сохраняем выбранную тему
-    if(document.body.classList.contains("light")){
-      localStorage.setItem("theme","light");
-    } else {
-      localStorage.setItem("theme","dark");
-    }
-  };
-}
-
-// Service Worker
+// ---------- Service Worker ----------
 if("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js");
 
-// Запуск
+// ---------- Запуск ----------
 generateCalendar();
 showShiftAlert();
